@@ -1,10 +1,10 @@
 provider "azurerm" {
   features {}
 
-  subscription_id = ${{ secrets.subscription_id }}
-  client_id       = ${{ secrets.AWS_ACCESS_KEY_ID }}
-  client_secret   = ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  tenant_id       = ${{ secrets.tenant_id }}
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
 }
 
 resource "azurerm_resource_group" "example" {
@@ -42,28 +42,29 @@ resource "azurerm_linux_virtual_machine" "VM1" {
   name                  = "VM1"
   resource_group_name   = azurerm_resource_group.example.name
   location              = azurerm_resource_group.example.location
-  size                  = "Standard_B1s" # Choose the VM size suitable for your workload
+  size                  = "Standard_B1s"
   admin_username        = "pranayvm"
-  admin_password        = "P@ssw0rd1234!" # Replace with a strong password
-  disable_password_authentication = false # Allow password authentication
+  admin_password        = "P@ssw0rd1234!"
+  disable_password_authentication = false
   network_interface_ids = [azurerm_network_interface.NF.id]
 
-os_disk {
+  os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
     name                 = "osdisk1"
-    disk_size_gb         = 30 # Adjust the disk size as needed
+    disk_size_gb         = 30
   }
 
   source_image_reference {
-  publisher = "Canonical"
-  offer     = "0001-com-ubuntu-server-focal"
-  sku       = "20_04-lts-gen2"
-  version   = "latest"
-}
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-focal"
+    sku       = "20_04-lts-gen2"
+    version   = "latest"
+  }
 
   computer_name = "linuxvm"
 }
-output "vm_public_ip" {
+
+output "vm_private_ip" {
   value = azurerm_network_interface.NF.ip_configuration[0].private_ip_address
 }

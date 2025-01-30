@@ -1,21 +1,18 @@
-name: Terraform Deployment
+name: Terraform Workflow
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - main  # Trigger Terraform Apply on changes to the main branch
   workflow_dispatch:  # Allows manual triggering for Terraform Destroy
 
 jobs:
   terraform-apply:
-    name: 'Terraform Apply'
+    name: Terraform Apply
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Login to Azure
@@ -48,12 +45,12 @@ jobs:
             -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"
 
   terraform-destroy:
-    name: 'Terraform Destroy'
+    name: Terraform Destroy
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'  # Only run when manually triggered
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Login to Azure
@@ -68,6 +65,9 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+
+      - name: Show Terraform State
+        run: terraform state list  # Verify resources tracked by Terraform
 
       - name: Terraform Destroy
         run: |

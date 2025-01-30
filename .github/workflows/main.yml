@@ -71,9 +71,11 @@ jobs:
         run: terraform state list  # Verify resources tracked by Terraform
 
       - name: Terraform Destroy
-        run: |
-          terraform destroy -auto-approve \
-            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
-            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"
+  run: |
+    terraform init  # Initialize backend to ensure state access
+    terraform destroy -auto-approve \
+      -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+      -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+      -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+      -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"
+

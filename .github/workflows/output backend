@@ -1,0 +1,2 @@
+- name: Show Terraform Backend
+  run: terraform show

@@ -10,6 +10,7 @@ jobs:
   terraform-apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'  # Only run this job on 'push'
 
     steps:
       - name: Checkout Repository
@@ -47,7 +48,7 @@ jobs:
   terraform-destroy:
     name: Terraform Destroy
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'  # Only run when manually triggered
+    if: github.event_name == 'workflow_dispatch'  # Only run this job on manual trigger
 
     steps:
       - name: Checkout Repository

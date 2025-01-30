@@ -1,56 +1,14 @@
-name: Terraform Deployment
+name: Terraform Workflow
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
-  terraform:
-    name: 'Terraform Apply'
+  terraform-apply:
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.5
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Plan
-        run: |
-          terraform plan \
-            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
-            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"
-
-      - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve \
-            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
-            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
-            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"
-
-
-  terraform-destroy:
-    runs-on: ubuntu-latest
-    needs: terraform-apply
-    if: ${{ github.event_name == 'workflow_dispatch' }}  # Only run destroy if manually triggered
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -58,7 +16,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.5.0  # Adjust to your preferred version
+          terraform_version: 1.5.0  # Specify the version you want to use
 
       - name: Azure Login
         uses: azure/login@v1
@@ -72,7 +30,12 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -destroy
+        run: terraform plan
 
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+
+  terraform-destroy:
+    runs-on: ubuntu-latest
+    needs: terraform-apply
+    if: ${{ github.event_name == 'workflow_dispatch' }}

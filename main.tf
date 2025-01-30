@@ -68,3 +68,13 @@ resource "azurerm_linux_virtual_machine" "VM1" {
 output "vm_private_ip" {
   value = azurerm_network_interface.NF.ip_configuration[0].private_ip_address
 }
+
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "<RESOURCE_GROUP_NAME>"
+    storage_account_name = "<STORAGE_ACCOUNT_NAME>"
+    container_name       = "<CONTAINER_NAME>"
+    key                  = "terraform.tfstate"
+  }
+}
+

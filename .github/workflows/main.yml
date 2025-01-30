@@ -26,6 +26,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Set environment variables for Terraform
+        run: |
+          echo "ARM_CLIENT_ID=$(jq -r .clientId <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=$(jq -r .clientSecret <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=$(jq -r .tenantId <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=$(jq -r .subscriptionId <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
+
       - name: Initialize Terraform
         run: terraform init
 
@@ -52,6 +59,13 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set environment variables for Terraform
+        run: |
+          echo "ARM_CLIENT_ID=$(jq -r .clientId <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=$(jq -r .clientSecret <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=$(jq -r .tenantId <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=$(jq -r .subscriptionId <<< ${{ secrets.AZURE_CREDENTIALS }})" >> $GITHUB_ENV
 
       - name: Initialize Terraform
         run: terraform init

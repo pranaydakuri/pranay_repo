@@ -1,45 +1,47 @@
-name: Terraform Workflow
+name: Terraform Deployment
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allows manual triggering of the workflow
-
-permissions:
-  id-token: write  # Required for Azure login
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  terraform-apply:
+  terraform:
+    name: 'Terraform Apply'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.5.0
-
-      - name: Azure Login
+      - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Set Terraform environment variables
-        run: |
-          echo "Setting up Terraform Authentication..."
-          echo 'AZURE_CREDENTIALS=${{ secrets.AZURE_CREDENTIALS }}' >> $GITHUB_ENV
-          echo 'ARM_CLIENT_ID=$(echo $AZURE_CREDENTIALS | jq -r .clientId)' >> $GITHUB_ENV
-          echo 'ARM_CLIENT_SECRET=$(echo $AZURE_CREDENTIALS | jq -r .clientSecret)' >> $GITHUB_ENV
-          echo 'ARM_TENANT_ID=$(echo $AZURE_CREDENTIALS | jq -r .tenantId)' >> $GITHUB_ENV
-          echo 'ARM_SUBSCRIPTION_ID=$(echo $AZURE_CREDENTIALS | jq -r .subscriptionId)' >> $GITHUB_ENV
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.5
 
-      - name: Initialize Terraform
+      - name: Terraform Init
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan
+        run: |
+          terraform plan \
+            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: |
+          terraform apply -auto-approve \
+            -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+            -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"

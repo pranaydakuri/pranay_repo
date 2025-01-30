@@ -18,19 +18,13 @@ jobs:
         with:
           terraform_version: 1.5.0  # Adjust to your preferred version
 
-      - name: Configure Azure CLI
-        uses: azure/setup-azurecli@v1
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          azure-cli-version: '2.47.0'  # Update to latest version if necessary
-
-      - name: Set up Azure credentials
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        run: |
-          az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: Initialize Terraform
         run: terraform init
@@ -54,19 +48,13 @@ jobs:
         with:
           terraform_version: 1.5.0  # Adjust to your preferred version
 
-      - name: Configure Azure CLI
-        uses: azure/setup-azurecli@v1
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          azure-cli-version: '2.47.0'
-
-      - name: Set up Azure credentials
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        run: |
-          az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
 
       - name: Initialize Terraform
         run: terraform init

@@ -1,4 +1,4 @@
-name: Terraform Azure VM Deployment
+name: Deploy Azure VM using Terraform
 
 on:
   push:
@@ -8,18 +8,17 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    concurrency: terraform-job  # Ensures only one job runs at a time
 
     steps:
-    - name: Checkout code
+    - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Set up Terraform
+    - name: Install Terraform
       uses: hashicorp/setup-terraform@v2
       with:
-        terraform_version: '1.5.0'
+        terraform_version: "1.5.0"
 
-    - name: Set up Azure credentials
+    - name: Azure Login
       uses: azure/login@v1
       with:
         client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -32,6 +31,16 @@ jobs:
 
     - name: Terraform Plan
       run: terraform plan -out=tfplan
+      env:
+        TF_VAR_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+        TF_VAR_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+        TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     - name: Terraform Apply
       run: terraform apply -auto-approve tfplan
+      env:
+        TF_VAR_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+        TF_VAR_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+        TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}

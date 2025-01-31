@@ -8,9 +8,9 @@ on:
     branches:
       - main
 
-permissions: # ✅ Add this section
-  id-token: write # Required for OIDC authentication
-  contents: read  # Allows reading repository contents
+permissions:  # ✅ Required for OIDC authentication
+  id-token: write
+  contents: read
 
 jobs:
   terraform:
@@ -41,7 +41,6 @@ jobs:
           terraform plan \
             -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
             -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
             -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"
 
       - name: Terraform Apply
@@ -49,5 +48,4 @@ jobs:
           terraform apply -auto-approve \
             -var "subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
             -var "client_id=${{ secrets.AZURE_CLIENT_ID }}" \
-            -var "client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
             -var "tenant_id=${{ secrets.AZURE_TENANT_ID }}"

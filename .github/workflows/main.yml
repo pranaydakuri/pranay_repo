@@ -8,6 +8,7 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    concurrency: terraform-job  # Ensures only one job runs at a time
 
     steps:
     - name: Checkout code

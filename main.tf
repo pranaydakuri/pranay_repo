@@ -1,11 +1,3 @@
-provider "azurerm" {
-  features {}
-
-  subscription_id = var.subscription_id
-  client_id       = var.client_id
-  tenant_id       = var.tenant_id
-}
-
 terraform {
   backend "azurerm" {
     resource_group_name   = "<RESOURCE_GROUP_NAME>"
@@ -14,6 +6,8 @@ terraform {
     key                   = "terraform.tfstate"
 
     use_oidc              = true  # ✅ Required for OIDC-based authentication
+    tenant_id             = var.tenant_id  # ✅ Ensure tenant_id is set
+    client_id             = var.client_id  # ✅ Ensure client_id is set
   }
 }
 

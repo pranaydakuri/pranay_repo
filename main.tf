@@ -1,13 +1,17 @@
 terraform {
   backend "azurerm" {
-    resource_group_name   = "<RESOURCE_GROUP_NAME>"
-    storage_account_name  = "<STORAGE_ACCOUNT_NAME>"
-    container_name        = "<CONTAINER_NAME>"
+    resource_group_name   = "my-resource-group"
+    storage_account_name  = "mystorageaccount"
+    container_name        = "mycontainer"
     key                   = "terraform.tfstate"
 
-    use_oidc              = true  # ✅ Required for OIDC-based authentication
+    use_oidc              = true
+    tenant_id             = "4c5bf8b2-f805-4d46-b440-e7c825226aa2"
+    client_id             = "91f29e34-9a90-48b3-9e6d-ffdc2cad31f4"
   }
 }
+
+
 
 provider "azurerm" {
   features {}

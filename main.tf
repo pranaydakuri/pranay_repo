@@ -8,13 +8,21 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    resource_group_name  = "<RESOURCE_GROUP_NAME>"  # Replace with actual RG name
-    storage_account_name = "<STORAGE_ACCOUNT_NAME>" # Replace with actual SA name
-    container_name       = "<CONTAINER_NAME>"       # Replace with actual container name
-    key                  = "terraform.tfstate"
-    
-    use_azuread_auth     = true  # ✅ Enables OIDC authentication (No client_secret needed)
+    resource_group_name   = "<RESOURCE_GROUP_NAME>"
+    storage_account_name  = "<STORAGE_ACCOUNT_NAME>"
+    container_name        = "<CONTAINER_NAME>"
+    key                   = "terraform.tfstate"
+
+    use_oidc              = true  # ✅ Required for OIDC-based authentication
   }
+}
+
+provider "azurerm" {
+  features {}
+
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  tenant_id       = var.tenant_id
 }
 
 resource "azurerm_resource_group" "example" {

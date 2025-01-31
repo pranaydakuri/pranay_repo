@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>3.0"
+    }
+  }
+}
+
 provider "azurerm" {
   features {}
 
@@ -30,7 +39,6 @@ resource "azurerm_network_interface" "example" {
   name                = "example-nic"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
-  subnet_id           = azurerm_subnet.example.id
 
   ip_configuration {
     name                          = "internal"
@@ -44,11 +52,13 @@ resource "azurerm_linux_virtual_machine" "example" {
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
   size                = "Standard_B1s"
+
   network_interface_ids = [
-    azurerm_network_interface.example.id,
+    azurerm_network_interface.example.id
   ]
-  admin_username = "adminuser"
-  admin_password = "P@ssw0rd1234!"
+
+  admin_username                  = "adminuser"
+  admin_password                  = "P@ssw0rd1234!"
   disable_password_authentication = false
 
   os_disk {

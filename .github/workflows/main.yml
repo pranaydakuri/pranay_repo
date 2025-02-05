@@ -17,6 +17,7 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch'  # Skip this job if the workflow is manually triggered
 
     steps:
       - name: Checkout code
@@ -48,7 +49,6 @@ jobs:
   destroy:
     name: 'Terraform Destroy'
     runs-on: ubuntu-latest
-    needs: terraform  # Ensure this job runs after the terraform job
     if: github.event_name == 'workflow_dispatch'  # Only run this job when manually triggered
 
     steps:

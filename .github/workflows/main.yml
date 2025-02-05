@@ -5,6 +5,7 @@ on:
     branches:
       - main  # Change this to your default branch if it's not 'main'
   pull_request:
+  workflow_dispatch:  # This allows you to manually trigger the workflow
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -43,3 +44,26 @@ jobs:
         id: apply
         run: terraform apply -auto-approve
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+  destroy:
+    name: 'Terraform Destroy'
+    runs-on: ubuntu-latest
+    needs: terraform  # Ensure this job runs after the terraform job
+    if: github.event_name == 'workflow_dispatch'  # Only run this job when manually triggered
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0  # Specify the version of Terraform you are using
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Destroy
+        id: destroy
+        run: terraform destroy -auto-approve

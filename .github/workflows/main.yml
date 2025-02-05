@@ -46,6 +46,12 @@ jobs:
         run: terraform apply -auto-approve
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
+      - name: Save Terraform State File
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-state
+          path: terraform.tfstate
+
   destroy:
     name: 'Terraform Destroy'
     runs-on: ubuntu-latest
@@ -54,6 +60,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Download Terraform State File
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-state
+          path: .
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1

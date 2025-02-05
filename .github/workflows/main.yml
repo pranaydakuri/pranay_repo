@@ -17,7 +17,6 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    if: github.event_name != 'workflow_dispatch'  # Skip this job if the workflow is manually triggered
 
     steps:
       - name: Checkout code
@@ -41,41 +40,11 @@ jobs:
         run: terraform plan -no-color
         continue-on-error: true
 
-      - name: Terraform Apply
-        id: apply
-        run: terraform apply -auto-approve
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-      - name: Save Terraform State File
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-state
-          path: terraform.tfstate
-
-  destroy:
-    name: 'Terraform Destroy'
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'  # Only run this job when manually triggered
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download Terraform State File
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-state
-          path: .
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.10.3  # Specify the version of Terraform you are using
-
-      - name: Terraform Init
-        id: init
-        run: terraform init
-
-      - name: Terraform Destroy
-        id: destroy
-        run: terraform destroy -auto-approve
+      - name: Terraform Apply or Destroy
+        id: apply_or_destroy
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            terraform destroy -auto-approve
+          else
+            terraform apply -auto-approve
+          fi

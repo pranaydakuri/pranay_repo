@@ -1,7 +1,41 @@
+# Configure the Azure provider
 provider "azurerm" {
   features {}
 }
 
+# Create a resource group for the storage account
+resource "azurerm_resource_group" "state_rg" {
+  name     = "tfstate-rg"
+  location = "East US"
+}
+
+# Create a storage account for Terraform state
+resource "azurerm_storage_account" "tfstate_storage" {
+  name                     = "tfstatestorage"  # Change this to a unique name
+  resource_group_name      = azurerm_resource_group.state_rg.name
+  location                 = azurerm_resource_group.state_rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+# Create a container in the storage account for the state file
+resource "azurerm_storage_container" "tfstate_container" {
+  name                  = "tfstate"
+  storage_account_name  = azurerm_storage_account.tfstate_storage.name
+  container_access_type = "private"
+}
+
+# Configure the Terraform backend to use Azure Storage
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "tfstate-rg"
+    storage_account_name = "tfstatestorage"  # Match the storage account name above
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+  }
+}
+
+# Your existing resources
 resource "azurerm_resource_group" "example" {
   name     = "example"
   location = "East US"

@@ -11,7 +11,7 @@ resource "azurerm_resource_group" "state_rg" {
 
 # Create a storage account for Terraform state
 resource "azurerm_storage_account" "tfstate_storage" {
-  name                     = "tfstatestorage"  # Change this to a unique name
+  name                     = "tfstatestorage8247"  # Change this to a unique name
   resource_group_name      = azurerm_resource_group.state_rg.name
   location                 = azurerm_resource_group.state_rg.location
   account_tier             = "Standard"
@@ -29,9 +29,9 @@ resource "azurerm_storage_container" "tfstate_container" {
 terraform {
   backend "azurerm" {
     resource_group_name  = "tfstate-rg"
-    storage_account_name = "tfstatestorage"  # Match the storage account name above
+    storage_account_name = "tfstatestorage8247"  # Match the storage account name above
     container_name       = "tfstate"
-    key                  = "terraform.tfstate"
+    key                  = "KEY"
   }
 }
 
